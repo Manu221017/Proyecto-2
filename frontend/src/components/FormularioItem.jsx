@@ -1,0 +1,113 @@
+import { useState } from 'react';
+import { CATEGORIAS, ESTADOS } from '../utils/constants.js';
+import { crearItemDesdeFormulario, itemAFormulario } from '../utils/itemFactory.js';
+
+const formInicial = {
+  id: '',
+  nombre: '',
+  categoriaId: 'rpg',
+  estado: 'pendiente',
+  puntuacion: '',
+  fechaRegistro: '',
+  notas: '',
+  atributosTexto: '{\n  "plataforma": "",\n  "horas": 0\n}',
+};
+
+export default function FormularioItem({ itemEditando, onGuardar, onCancelar }) {
+  const [form, setForm] = useState(() =>
+    itemEditando ? itemAFormulario(itemEditando) : formInicial
+  );
+
+  function actualizar(campo, valor) {
+    setForm((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!form.nombre.trim()) return;
+    onGuardar(crearItemDesdeFormulario(form));
+    if (!itemEditando) {
+      setForm(formInicial);
+    }
+  }
+
+  return (
+    <form className="formulario" onSubmit={handleSubmit}>
+      <h2>{itemEditando ? 'Editar meta' : 'Nueva meta'}</h2>
+
+      <label>
+        Nombre
+        <input
+          value={form.nombre}
+          onChange={(e) => actualizar('nombre', e.target.value)}
+          placeholder="Ej: Terminar Elden Ring"
+          required
+        />
+      </label>
+
+      <label>
+        Categoría
+        <select
+          value={form.categoriaId}
+          onChange={(e) => actualizar('categoriaId', e.target.value)}
+        >
+          {CATEGORIAS.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        Estado
+        <select value={form.estado} onChange={(e) => actualizar('estado', e.target.value)}>
+          {ESTADOS.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        Puntuación (0-10, vacío = sin nota)
+        <input
+          type="number"
+          min="0"
+          max="10"
+          step="0.5"
+          value={form.puntuacion}
+          onChange={(e) => actualizar('puntuacion', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Notas
+        <textarea
+          value={form.notas}
+          onChange={(e) => actualizar('notas', e.target.value)}
+          rows={2}
+        />
+      </label>
+
+      <label>
+        Atributos (JSON)
+        <textarea
+          value={form.atributosTexto}
+          onChange={(e) => actualizar('atributosTexto', e.target.value)}
+          rows={4}
+        />
+      </label>
+
+      <section className="form-actions">
+        <button type="submit">{itemEditando ? 'Actualizar' : 'Crear'}</button>
+        {itemEditando && (
+          <button type="button" className="btn-secondary" onClick={onCancelar}>
+            Cancelar
+          </button>
+        )}
+      </section>
+    </form>
+  );
+}
