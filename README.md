@@ -1,7 +1,30 @@
-# STW Fase 1 — useState · useEffect · Backend
+# STW Proyecto-2 — Sistemas y Tecnologías Web (UVG)
 
-Proyecto independiente para **Sistemas y Tecnologías Web** (UVG).  
-Frontend con CRUD en LocalStorage y backend Express con SQLite (sin conexión entre ambos hasta Fase 2).
+Repositorio: https://github.com/Manu221017/Proyecto-2
+
+| Rama | Contenido |
+|------|-----------|
+| `main` | Fase 1 — useState, useEffect, LocalStorage + API Express (independientes) |
+| `fase-2` | Fase 2 — StorageContext, ThemeContext, useRef, categorías |
+
+## Fase 2 (rama `fase-2`)
+
+- **StorageContext:** `modo`, `setModo`, `obtenerItems()`, `guardarItem()`, `eliminarItem()` — alterna LocalStorage / API sin `if(modo)` en componentes.
+- **ThemeContext:** tema claro/oscuro con variables CSS, persiste en localStorage, atajo **T**.
+- **useRef:** foco en nombre tras crear; scroll automático horizontal en la lista.
+- **Categorías:** `frontend/src/utils/categorias.js` (6 categorías con emoji y color).
+
+```bash
+git checkout fase-2
+cd backend && npm run dev
+cd frontend && npm run dev
+```
+
+---
+
+## Fase 1 (rama `main`)
+
+Frontend con CRUD en LocalStorage y backend Express con SQLite.
 
 ## Estructura
 

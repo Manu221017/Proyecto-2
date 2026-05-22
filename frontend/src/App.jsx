@@ -1,42 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import BarraHerramientas from './components/BarraHerramientas.jsx';
 import FormularioItem from './components/FormularioItem.jsx';
 import ListaItems from './components/ListaItems.jsx';
-import { STORAGE_KEY } from './utils/constants.js';
+import { useStorage } from './context/StorageContext.jsx';
 
 export default function App() {
-  const [items, setItems] = useState(() =>
-    JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-  );
+  const { items, cargando, guardarItem, eliminarItem } = useStorage();
   const [itemEditando, setItemEditando] = useState(null);
+  const [focusTrigger, setFocusTrigger] = useState(0);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+  async function handleGuardar(item) {
+    const esNuevo = !itemEditando;
+    await guardarItem(item);
+    setItemEditando(null);
+    if (esNuevo) setFocusTrigger((n) => n + 1);
+  }
 
-  const activos = items.filter((i) => i.activo !== false);
-
-  function handleGuardar(item) {
-    setItems((prev) => {
-      const existe = prev.some((i) => i.id === item.id);
-      if (existe) {
-        return prev.map((i) => (i.id === item.id ? { ...item, fechaActividad: new Date().toISOString() } : i));
-      }
-      return [...prev, item];
-    });
+  async function handleArchivar(id) {
+    await eliminarItem(id);
     setItemEditando(null);
   }
 
-  function handleArchivar(id) {
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, activo: false, fechaActividad: new Date().toISOString() } : i
-      )
-    );
-    setItemEditando(null);
-  }
-
-  function handleCompletado(item) {
-    handleGuardar({
+  async function handleCompletado(item) {
+    await guardarItem({
       ...item,
       estado: 'completado',
       puntuacion: item.puntuacion ?? 10,
@@ -47,21 +33,28 @@ export default function App() {
     <main className="app">
       <header className="app-header">
         <h1>Mis metas personales</h1>
-        <p>Fase 1 — useState, useEffect y LocalStorage (UVG)</p>
+        <p>Fase 2 — Context, tema y API / LocalStorage (UVG)</p>
       </header>
+
+      <BarraHerramientas />
 
       <FormularioItem
         itemEditando={itemEditando}
         onGuardar={handleGuardar}
         onCancelar={() => setItemEditando(null)}
+        focusTrigger={focusTrigger}
       />
 
-      <ListaItems
-        items={activos}
-        onEditar={setItemEditando}
-        onArchivar={handleArchivar}
-        onMarcarCompletado={handleCompletado}
-      />
+      {cargando ? (
+        <p className="vacio">Cargando metas…</p>
+      ) : (
+        <ListaItems
+          items={items}
+          onEditar={setItemEditando}
+          onArchivar={handleArchivar}
+          onMarcarCompletado={handleCompletado}
+        />
+      )}
     </main>
   );
 }

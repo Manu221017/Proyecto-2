@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { CATEGORIAS, ESTADOS } from '../utils/constants.js';
+import { useEffect, useRef, useState } from 'react';
+import { CATEGORIAS } from '../utils/categorias.js';
+import { ESTADOS } from '../utils/constants.js';
 import { crearItemDesdeFormulario, itemAFormulario } from '../utils/itemFactory.js';
 
 const formInicial = {
@@ -13,19 +14,37 @@ const formInicial = {
   atributosTexto: '{\n  "plataforma": "",\n  "horas": 0\n}',
 };
 
-export default function FormularioItem({ itemEditando, onGuardar, onCancelar }) {
+export default function FormularioItem({
+  itemEditando,
+  onGuardar,
+  onCancelar,
+  focusTrigger,
+}) {
   const [form, setForm] = useState(() =>
     itemEditando ? itemAFormulario(itemEditando) : formInicial
   );
+  const nombreInputRef = useRef(null);
+
+  useEffect(() => {
+    if (itemEditando) {
+      setForm(itemAFormulario(itemEditando));
+    }
+  }, [itemEditando]);
+
+  useEffect(() => {
+    if (focusTrigger > 0) {
+      nombreInputRef.current?.focus();
+    }
+  }, [focusTrigger]);
 
   function actualizar(campo, valor) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!form.nombre.trim()) return;
-    onGuardar(crearItemDesdeFormulario(form));
+    await onGuardar(crearItemDesdeFormulario(form));
     if (!itemEditando) {
       setForm(formInicial);
     }
@@ -38,6 +57,7 @@ export default function FormularioItem({ itemEditando, onGuardar, onCancelar }) 
       <label>
         Nombre
         <input
+          ref={nombreInputRef}
           value={form.nombre}
           onChange={(e) => actualizar('nombre', e.target.value)}
           placeholder="Ej: Terminar Elden Ring"
@@ -53,7 +73,7 @@ export default function FormularioItem({ itemEditando, onGuardar, onCancelar }) 
         >
           {CATEGORIAS.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.label}
+              {c.emoji} {c.nombre}
             </option>
           ))}
         </select>
@@ -62,9 +82,9 @@ export default function FormularioItem({ itemEditando, onGuardar, onCancelar }) 
       <label>
         Estado
         <select value={form.estado} onChange={(e) => actualizar('estado', e.target.value)}>
-          {ESTADOS.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.label}
+          {ESTADOS.map((est) => (
+            <option key={est.id} value={est.id}>
+              {est.label}
             </option>
           ))}
         </select>

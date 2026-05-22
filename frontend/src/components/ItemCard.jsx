@@ -1,19 +1,28 @@
-import { CATEGORIAS, ESTADOS } from '../utils/constants.js';
+import { buscarCategoria } from '../utils/categorias.js';
+import { ESTADOS } from '../utils/constants.js';
 
-function etiqueta(lista, id) {
-  return lista.find((x) => x.id === id)?.label ?? id;
+function etiquetaEstado(id) {
+  return ESTADOS.find((x) => x.id === id)?.label ?? id;
 }
 
 export default function ItemCard({ item, onEditar, onArchivar, onMarcarCompletado }) {
+  const cat = buscarCategoria(item.categoriaId);
+
   return (
-    <article className="item-card">
+    <article
+      className="item-card"
+      style={cat ? { borderLeftColor: cat.color, borderLeftWidth: '4px' } : undefined}
+    >
       <header>
-        <h3>{item.nombre}</h3>
-        <span className={`badge badge-${item.estado}`}>{etiqueta(ESTADOS, item.estado)}</span>
+        <h3>
+          {cat?.emoji} {item.nombre}
+        </h3>
+        <span className={`badge badge-${item.estado}`}>{etiquetaEstado(item.estado)}</span>
       </header>
 
       <p className="meta">
-        <strong>Categoría:</strong> {etiqueta(CATEGORIAS, item.categoriaId)}
+        <strong>Categoría:</strong>{' '}
+        <span style={{ color: cat?.color }}>{cat?.nombre ?? item.categoriaId}</span>
       </p>
 
       {item.puntuacion != null && (
