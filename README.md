@@ -22,6 +22,44 @@ npm run dev          # solo frontend → http://localhost:5173
 npm run dev:all      # frontend + backend a la vez (modo API)
 ```
 
+## Docker
+
+Requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y en ejecución.
+
+Copia variables de entorno (opcional):
+
+```bash
+copy .env.example .env
+```
+
+### Desarrollo (hot reload)
+
+```bash
+npm run docker:dev
+```
+
+- Frontend: http://localhost:5173  
+- Backend: http://localhost:3000  
+- En la app, elige modo **API** para usar el backend del contenedor.
+
+### Producción (build + nginx)
+
+```bash
+npm run docker:up
+```
+
+Mismos puertos. La base SQLite se guarda en el volumen `sqlite-data`.
+
+### Detener
+
+```bash
+npm run docker:down
+# o desarrollo:
+npm run docker:dev:down
+```
+
+> **Importante:** `VITE_API_URL` debe ser `http://localhost:3000/api` porque el navegador corre en tu PC, no dentro de Docker. No uses `http://backend:3000` en el `.env`.
+
 ---
 
 ## Fase 1 (rama `main`)
