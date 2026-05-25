@@ -16,8 +16,10 @@ Repositorio: https://github.com/Manu221017/Proyecto-2
 
 ```bash
 git checkout fase-2
-cd backend && npm run dev
-cd frontend && npm run dev
+npm install          # solo la primera vez (raíz + concurrently)
+npm run install:all  # dependencias de frontend y backend
+npm run dev          # solo frontend → http://localhost:5173
+npm run dev:all      # frontend + backend a la vez (modo API)
 ```
 
 ---
