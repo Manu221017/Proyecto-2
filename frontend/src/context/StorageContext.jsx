@@ -39,8 +39,9 @@ export function StorageProvider({ children }) {
       setError(null);
       const idsExistentes = new Set(items.map((i) => i.id));
       try {
-        await adaptador.guardarItem(item, idsExistentes);
+        const guardado = await adaptador.guardarItem(item, idsExistentes);
         await obtenerItems();
+        return guardado;
       } catch (err) {
         setError(err.message || 'Error al guardar');
         throw err;

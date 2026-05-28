@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import ItemCard from './ItemCard.jsx';
 
-export default function ListaItems({ items, onEditar, onArchivar, onMarcarCompletado }) {
+function ListaItems({ items, onEditar, onArchivar, onCambiarEstado, onRegistrarActividad }) {
   const listaRef = useRef(null);
   const intervaloRef = useRef(null);
 
@@ -11,7 +11,7 @@ export default function ListaItems({ items, onEditar, onArchivar, onMarcarComple
       intervaloRef.current = null;
     }
 
-    if (items.length < 2 || !listaRef.current) return;
+    if (items.length < 2 || !listaRef.current) return undefined;
 
     intervaloRef.current = setInterval(() => {
       const el = listaRef.current;
@@ -34,7 +34,7 @@ export default function ListaItems({ items, onEditar, onArchivar, onMarcarComple
   }, [items.length]);
 
   if (items.length === 0) {
-    return <p className="vacio">No hay metas activas. Crea la primera arriba.</p>;
+    return <p className="vacio">No hay metas con los filtros actuales.</p>;
   }
 
   return (
@@ -47,10 +47,13 @@ export default function ListaItems({ items, onEditar, onArchivar, onMarcarComple
             item={item}
             onEditar={onEditar}
             onArchivar={onArchivar}
-            onMarcarCompletado={onMarcarCompletado}
+            onCambiarEstado={onCambiarEstado}
+            onRegistrarActividad={onRegistrarActividad}
           />
         ))}
       </section>
     </section>
   );
 }
+
+export default memo(ListaItems);

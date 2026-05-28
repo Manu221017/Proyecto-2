@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { buscarCategoria } from '../utils/categorias.js';
 import { ESTADOS } from '../utils/constants.js';
 
@@ -5,8 +6,10 @@ function etiquetaEstado(id) {
   return ESTADOS.find((x) => x.id === id)?.label ?? id;
 }
 
-export default function ItemCard({ item, onEditar, onArchivar, onMarcarCompletado }) {
+function ItemCard({ item, onEditar, onArchivar, onCambiarEstado, onRegistrarActividad }) {
   const cat = buscarCategoria(item.categoriaId);
+  const siguienteEstado = item.estado === 'en_progreso' ? 'pausado' : 'en_progreso';
+  const etiquetaAccionEstado = item.estado === 'en_progreso' ? 'Pausar' : 'Activar';
 
   return (
     <article
@@ -21,13 +24,13 @@ export default function ItemCard({ item, onEditar, onArchivar, onMarcarCompletad
       </header>
 
       <p className="meta">
-        <strong>Categoría:</strong>{' '}
+        <strong>Categoria:</strong>{' '}
         <span style={{ color: cat?.color }}>{cat?.nombre ?? item.categoriaId}</span>
       </p>
 
       {item.puntuacion != null && (
         <p className="meta">
-          <strong>Puntuación:</strong> {item.puntuacion}/10
+          <strong>Puntuacion:</strong> {item.puntuacion}/10
         </p>
       )}
 
@@ -48,10 +51,22 @@ export default function ItemCard({ item, onEditar, onArchivar, onMarcarCompletad
           Editar
         </button>
         {item.estado !== 'completado' && (
-          <button type="button" onClick={() => onMarcarCompletado(item)}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => onCambiarEstado(item, siguienteEstado)}
+          >
+            {etiquetaAccionEstado}
+          </button>
+        )}
+        {item.estado !== 'completado' && (
+          <button type="button" onClick={() => onCambiarEstado(item, 'completado')}>
             Completar
           </button>
         )}
+        <button type="button" className="btn-secondary" onClick={() => onRegistrarActividad(item)}>
+          Actividad
+        </button>
         <button type="button" className="btn-danger" onClick={() => onArchivar(item.id)}>
           Archivar
         </button>
@@ -59,3 +74,5 @@ export default function ItemCard({ item, onEditar, onArchivar, onMarcarCompletad
     </article>
   );
 }
+
+export default memo(ItemCard);

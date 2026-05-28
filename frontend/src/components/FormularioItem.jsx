@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { CATEGORIAS } from '../utils/categorias.js';
 import { ESTADOS } from '../utils/constants.js';
 import { crearItemDesdeFormulario, itemAFormulario } from '../utils/itemFactory.js';
@@ -14,21 +14,14 @@ const formInicial = {
   atributosTexto: '{\n  "plataforma": "",\n  "horas": 0\n}',
 };
 
-export default function FormularioItem({
-  itemEditando,
-  onGuardar,
-  onCancelar,
-  focusTrigger,
-}) {
+function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
   const [form, setForm] = useState(() =>
     itemEditando ? itemAFormulario(itemEditando) : formInicial
   );
   const nombreInputRef = useRef(null);
 
   useEffect(() => {
-    if (itemEditando) {
-      setForm(itemAFormulario(itemEditando));
-    }
+    setForm(itemEditando ? itemAFormulario(itemEditando) : formInicial);
   }, [itemEditando]);
 
   useEffect(() => {
@@ -37,18 +30,21 @@ export default function FormularioItem({
     }
   }, [focusTrigger]);
 
-  function actualizar(campo, valor) {
+  const actualizar = useCallback((campo, valor) => {
     setForm((prev) => ({ ...prev, [campo]: valor }));
-  }
+  }, []);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!form.nombre.trim()) return;
-    await onGuardar(crearItemDesdeFormulario(form));
-    if (!itemEditando) {
-      setForm(formInicial);
-    }
-  }
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!form.nombre.trim()) return;
+      await onGuardar(crearItemDesdeFormulario(form));
+      if (!itemEditando) {
+        setForm(formInicial);
+      }
+    },
+    [form, itemEditando, onGuardar]
+  );
 
   return (
     <form className="formulario" onSubmit={handleSubmit}>
@@ -66,7 +62,7 @@ export default function FormularioItem({
       </label>
 
       <label>
-        Categoría
+        Categoria
         <select
           value={form.categoriaId}
           onChange={(e) => actualizar('categoriaId', e.target.value)}
@@ -91,7 +87,7 @@ export default function FormularioItem({
       </label>
 
       <label>
-        Puntuación (0-10, vacío = sin nota)
+        Puntuacion (0-10, vacio = sin nota)
         <input
           type="number"
           min="0"
@@ -131,3 +127,5 @@ export default function FormularioItem({
     </form>
   );
 }
+
+export default memo(FormularioItem);
