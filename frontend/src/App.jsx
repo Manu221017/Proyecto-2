@@ -3,6 +3,7 @@ import BarraHerramientas from './components/BarraHerramientas.jsx';
 import DashboardGraficas from './components/DashboardGraficas.jsx';
 import FormularioItem from './components/FormularioItem.jsx';
 import ListaItems from './components/ListaItems.jsx';
+import ModalEdicion from './components/ModalEdicion.jsx';
 import PanelFiltros from './components/PanelFiltros.jsx';
 import { useStorage } from './context/StorageContext.jsx';
 import { CATEGORIAS } from './utils/categorias.js';
@@ -294,14 +295,16 @@ export default function App() {
 
       <BarraHerramientas />
 
-      <Profiler id="FormularioItem" onRender={handleProfilerRender}>
-        <FormularioItem
-          itemEditando={estado.itemEditando}
-          onGuardar={handleGuardar}
-          onCancelar={handleCancelarEdicion}
-          focusTrigger={estado.focusTrigger}
-        />
-      </Profiler>
+      {!estado.itemEditando && (
+        <Profiler id="FormularioItem" onRender={handleProfilerRender}>
+          <FormularioItem
+            itemEditando={null}
+            onGuardar={handleGuardar}
+            onCancelar={handleCancelarEdicion}
+            focusTrigger={estado.focusTrigger}
+          />
+        </Profiler>
+      )}
 
       {cargando ? (
         <p className="vacio">Cargando metas...</p>
@@ -334,6 +337,17 @@ export default function App() {
             />
           </Profiler>
         </>
+      )}
+
+      {estado.itemEditando && (
+        <Profiler id="ModalEdicion" onRender={handleProfilerRender}>
+          <ModalEdicion
+            itemEditando={estado.itemEditando}
+            onGuardar={handleGuardar}
+            onCancelar={handleCancelarEdicion}
+            focusTrigger={estado.focusTrigger}
+          />
+        </Profiler>
       )}
     </main>
   );

@@ -14,7 +14,7 @@ const formInicial = {
   atributosTexto: '{\n  "plataforma": "",\n  "horas": 0\n}',
 };
 
-function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
+function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger, tituloId }) {
   const [form, setForm] = useState(() =>
     itemEditando ? itemAFormulario(itemEditando) : formInicial
   );
@@ -23,6 +23,13 @@ function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
 
   useEffect(() => {
     setForm(itemEditando ? itemAFormulario(itemEditando) : formInicial);
+    if (!itemEditando) return undefined;
+
+    const frame = requestAnimationFrame(() => {
+      nombreInputRef.current?.focus();
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [itemEditando]);
 
   useEffect(() => {
@@ -55,7 +62,7 @@ function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
 
   return (
     <form className="formulario" onSubmit={handleSubmit} aria-busy={enviando}>
-      <h2>{itemEditando ? 'Editar meta' : 'Nueva meta'}</h2>
+      <h2 id={tituloId}>{itemEditando ? 'Editar meta' : 'Nueva meta'}</h2>
 
       <label>
         Nombre
