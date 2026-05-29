@@ -132,6 +132,7 @@ export default function App() {
     cargando,
     guardarItem,
     eliminarItem,
+    registrarActividad,
   } = useStorage();
   const [estado, dispatch] = useReducer(metasReducer, estadoInicialMetas);
 
@@ -233,15 +234,28 @@ export default function App() {
         ...item,
         fechaActividad: fecha,
       };
-      const guardado = await guardarItem(actualizado);
-      const itemFinal = guardado ?? actualizado;
+      const registro = await registrarActividad(item.id, {
+        fecha,
+        valor: item.puntuacion ?? null,
+        notas: 'Actividad registrada desde la app',
+      });
+      const itemFinal = {
+        ...actualizado,
+        fechaActividad: registro.fecha ?? fecha,
+        puntuacion: registro.valor ?? item.puntuacion,
+      };
 
       dispatch({
         type: ACCIONES.REGISTRAR_ACTIVIDAD,
-        payload: crearActividad('actividad', itemFinal, itemFinal.fechaActividad ?? fecha),
+        payload: crearActividad(
+          'actividad',
+          itemFinal,
+          registro.fecha ?? fecha,
+          registro.valor ?? itemFinal.puntuacion
+        ),
       });
     },
-    [guardarItem]
+    [registrarActividad]
   );
 
   const handleFiltrar = useCallback((filtroParcial) => {
