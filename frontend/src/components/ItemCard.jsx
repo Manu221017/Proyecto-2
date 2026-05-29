@@ -10,11 +10,17 @@ function ItemCard({ item, onEditar, onArchivar, onCambiarEstado, onRegistrarActi
   const cat = buscarCategoria(item.categoriaId);
   const siguienteEstado = item.estado === 'en_progreso' ? 'pausado' : 'en_progreso';
   const etiquetaAccionEstado = item.estado === 'en_progreso' ? 'Pausar' : 'Activar';
+  const puntuacionNumerica = Number(item.puntuacion);
+  const puntuacion =
+    item.puntuacion == null || !Number.isFinite(puntuacionNumerica)
+      ? null
+      : Math.max(0, Math.min(10, puntuacionNumerica));
 
   return (
     <article
       className="item-card"
-      style={cat ? { borderLeftColor: cat.color, borderLeftWidth: '4px' } : undefined}
+      data-estado={item.estado}
+      style={cat ? { '--accent-color': cat.color, borderLeftColor: cat.color } : undefined}
     >
       <header>
         <h3>
@@ -28,10 +34,19 @@ function ItemCard({ item, onEditar, onArchivar, onCambiarEstado, onRegistrarActi
         <span style={{ color: cat?.color }}>{cat?.nombre ?? item.categoriaId}</span>
       </p>
 
-      {item.puntuacion != null && (
-        <p className="meta">
-          <strong>Puntuacion:</strong> {item.puntuacion}/10
-        </p>
+      {puntuacion != null && (
+        <div className="score-block">
+          <p className="meta">
+            <strong>Puntuacion:</strong> {item.puntuacion}/10
+          </p>
+          <div
+            className="score-meter"
+            aria-label={`Puntuacion ${item.puntuacion} de 10`}
+            style={{ '--score': `${puntuacion * 10}%` }}
+          >
+            <span />
+          </div>
+        </div>
       )}
 
       {item.notas && <p className="notas">{item.notas}</p>}

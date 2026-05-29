@@ -18,6 +18,7 @@ function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
   const [form, setForm] = useState(() =>
     itemEditando ? itemAFormulario(itemEditando) : formInicial
   );
+  const [enviando, setEnviando] = useState(false);
   const nombreInputRef = useRef(null);
 
   useEffect(() => {
@@ -37,17 +38,23 @@ function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
-      if (!form.nombre.trim()) return;
-      await onGuardar(crearItemDesdeFormulario(form));
-      if (!itemEditando) {
-        setForm(formInicial);
+      if (!form.nombre.trim() || enviando) return;
+
+      setEnviando(true);
+      try {
+        await onGuardar(crearItemDesdeFormulario(form));
+        if (!itemEditando) {
+          setForm(formInicial);
+        }
+      } finally {
+        setEnviando(false);
       }
     },
-    [form, itemEditando, onGuardar]
+    [enviando, form, itemEditando, onGuardar]
   );
 
   return (
-    <form className="formulario" onSubmit={handleSubmit}>
+    <form className="formulario" onSubmit={handleSubmit} aria-busy={enviando}>
       <h2>{itemEditando ? 'Editar meta' : 'Nueva meta'}</h2>
 
       <label>
@@ -117,9 +124,11 @@ function FormularioItem({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
       </label>
 
       <section className="form-actions">
-        <button type="submit">{itemEditando ? 'Actualizar' : 'Crear'}</button>
+        <button type="submit" className={enviando ? 'btn-loading' : undefined} disabled={enviando}>
+          {enviando ? 'Guardando...' : itemEditando ? 'Actualizar' : 'Crear'}
+        </button>
         {itemEditando && (
-          <button type="button" className="btn-secondary" onClick={onCancelar}>
+          <button type="button" className="btn-secondary" onClick={onCancelar} disabled={enviando}>
             Cancelar
           </button>
         )}

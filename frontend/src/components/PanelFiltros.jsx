@@ -6,21 +6,27 @@ function PanelFiltros({ filtros, estadisticas, onFiltrar, onLimpiar }) {
   return (
     <section className="panel-filtros">
       <div className="metricas">
-        <article>
+        <article className="metric-card">
           <span>Total</span>
           <strong>{estadisticas.total}</strong>
         </article>
-        <article>
+        <article className="metric-card">
           <span>Completadas</span>
           <strong>{estadisticas.completadas}</strong>
         </article>
-        <article>
+        <article className="metric-card">
           <span>Promedio</span>
           <strong>{estadisticas.promedioPuntuacion}</strong>
         </article>
-        <article>
+        <article
+          className="metric-card metric-avance"
+          style={{ '--avance': `${estadisticas.porcentajeCompletado}%` }}
+        >
           <span>Avance</span>
           <strong>{estadisticas.porcentajeCompletado}%</strong>
+          <div className="metric-progress" aria-hidden="true">
+            <span />
+          </div>
         </article>
       </div>
 
