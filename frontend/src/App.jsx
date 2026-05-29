@@ -289,7 +289,7 @@ export default function App() {
     <main className="app">
       <header className="app-header">
         <h1>Mis metas personales</h1>
-        <p>Fase 3 - useReducer, graficas y optimizacion</p>
+        <p>Seguimiento de metas, actividad y progreso con almacenamiento local o API.</p>
       </header>
 
       <BarraHerramientas />

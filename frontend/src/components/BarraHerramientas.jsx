@@ -15,11 +15,16 @@ export default function BarraHerramientas() {
         </select>
       </label>
 
-      <button type="button" className="btn-theme" onClick={alternarTema}>
-        {tema === 'light' ? '🌙 Oscuro' : '☀️ Claro'} (T)
+      <button
+        type="button"
+        className="btn-theme"
+        onClick={alternarTema}
+        aria-label="Cambiar tema"
+      >
+        {tema === 'light' ? 'Modo oscuro' : 'Modo claro'} (T)
       </button>
 
-      {cargando && <span className="toolbar-hint">Cargando…</span>}
+      {cargando && <span className="toolbar-hint">Cargando...</span>}
       {error && <span className="toolbar-error">{error}</span>}
     </section>
   );
