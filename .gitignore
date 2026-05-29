@@ -2,5 +2,6 @@ node_modules/
 .env
 *.sqlite
 *.db
+*.log
 dist/
 .DS_Store
