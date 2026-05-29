@@ -5,6 +5,7 @@ import {
   crearItemApi,
   actualizarItemApi,
   archivarItemApi,
+  registrarActividadApi,
 } from './apiItems.js';
 
 function soloActivos(lista) {
@@ -41,6 +42,30 @@ export const adaptadorLocal = {
       )
     );
   },
+
+  async registrarActividad(id, registro) {
+    const fecha = registro.fecha ?? new Date().toISOString();
+    const todos = cargarItems();
+    guardarItems(
+      todos.map((i) =>
+        i.id === id
+          ? {
+              ...i,
+              fechaActividad: fecha,
+              puntuacion: registro.valor ?? i.puntuacion,
+            }
+          : i
+      )
+    );
+
+    return {
+      id: crypto.randomUUID(),
+      itemId: id,
+      fecha,
+      valor: registro.valor ?? null,
+      notas: registro.notas ?? '',
+    };
+  },
 };
 
 export const adaptadorApi = {
@@ -61,6 +86,10 @@ export const adaptadorApi = {
 
   async eliminarItem(id) {
     return archivarItemApi(id);
+  },
+
+  async registrarActividad(id, registro) {
+    return registrarActividadApi(id, registro);
   },
 };
 

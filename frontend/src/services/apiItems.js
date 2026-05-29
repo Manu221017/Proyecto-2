@@ -36,3 +36,13 @@ export async function archivarItemApi(id) {
   if (!res.ok) await parseError(res);
   return res.json();
 }
+
+export async function registrarActividadApi(id, registro) {
+  const res = await fetch(`${API_BASE}/items/${id}/registro`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(registro),
+  });
+  if (!res.ok) await parseError(res);
+  return res.json();
+}

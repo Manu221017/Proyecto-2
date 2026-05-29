@@ -64,6 +64,21 @@ export function StorageProvider({ children }) {
     [adaptador, obtenerItems]
   );
 
+  const registrarActividad = useCallback(
+    async (id, registro) => {
+      setError(null);
+      try {
+        const guardado = await adaptador.registrarActividad(id, registro);
+        await obtenerItems();
+        return guardado;
+      } catch (err) {
+        setError(err.message || 'Error al registrar actividad');
+        throw err;
+      }
+    },
+    [adaptador, obtenerItems]
+  );
+
   useEffect(() => {
     obtenerItems();
   }, [obtenerItems]);
@@ -78,8 +93,19 @@ export function StorageProvider({ children }) {
       obtenerItems,
       guardarItem,
       eliminarItem,
+      registrarActividad,
     }),
-    [modo, setModo, items, cargando, error, obtenerItems, guardarItem, eliminarItem]
+    [
+      modo,
+      setModo,
+      items,
+      cargando,
+      error,
+      obtenerItems,
+      guardarItem,
+      eliminarItem,
+      registrarActividad,
+    ]
   );
 
   return (
