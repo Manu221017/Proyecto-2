@@ -126,6 +126,6 @@ Evidencia escrita: `docs/fase3-profiler.md`.
 
 ## 10. Sobre Mi
 
-Karen, estudiante de Sistemas y Tecnologias Web en UVG. En este proyecto cerre el flujo completo: estado local, API, persistencia, optimizacion con Profiler, hooks reutilizables y preparacion para deploy en produccion.
+Manuel, estudiante de Sistemas y Tecnologias Web en UVG. En este proyecto cerre el flujo completo: estado local, API, persistencia, optimizacion con Profiler, hooks reutilizables y preparacion para deploy en produccion.
 
 Mi decision tecnica principal fue aislar la persistencia en adaptadores y hooks. Asi los componentes no dependen de si los datos vienen de LocalStorage o de Express, y el cambio de modo se mantiene en una sola frontera clara.
