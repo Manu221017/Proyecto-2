@@ -41,6 +41,15 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    service: 'Proyecto 2 API',
+    health: '/api/health',
+    items: '/api/items',
+  });
+});
+
 app.use('/api/items', itemsRouter);
 
 app.listen(PORT, () => {
