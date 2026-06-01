@@ -1,139 +1,131 @@
-# STW Proyecto-2 — Sistemas y Tecnologías Web (UVG)
+# Proyecto 2 - Mis metas personales
 
-Repositorio: https://github.com/Manu221017/Proyecto-2
+Aplicacion full stack para registrar metas personales, medir avance, alternar entre LocalStorage y API Express, visualizar graficas y defender decisiones tecnicas con hooks reutilizables.
 
-| Rama | Contenido |
-|------|-----------|
-| `main` | Fase 1 — useState, useEffect, LocalStorage + API Express (independientes) |
-| `fase-2` | Fase 2 — StorageContext, ThemeContext, useRef, categorías |
+## 1. URLs y Deploy
 
-## Fase 2 (rama `fase-2`)
+| Recurso | URL |
+|---|---|
+| Repositorio | https://github.com/Manu221017/Proyecto-2 |
+| Frontend Vercel | Pendiente: `https://TU-FRONTEND.vercel.app` |
+| Backend Render | Pendiente: `https://TU-BACKEND.onrender.com` |
+| Health check | Pendiente: `https://TU-BACKEND.onrender.com/api/health` |
+| Video demo | Pendiente: agregar enlace del video final |
 
-- **StorageContext:** `modo`, `setModo`, `obtenerItems()`, `guardarItem()`, `eliminarItem()` — alterna LocalStorage / API sin `if(modo)` en componentes.
-- **ThemeContext:** tema claro/oscuro con variables CSS, persiste en localStorage, atajo **T**.
-- **useRef:** foco en nombre tras crear; scroll automático horizontal en la lista.
-- **Categorías:** `frontend/src/utils/categorias.js` (6 categorías con emoji y color).
+Variables de produccion:
 
-```bash
-git checkout fase-2
-npm install          # solo la primera vez (raíz + concurrently)
-npm run install:all  # dependencias de frontend y backend
-npm run dev          # solo frontend → http://localhost:5173
-npm run dev:all      # frontend + backend a la vez (modo API)
-```
+- Vercel: `VITE_API_URL=https://TU-BACKEND.onrender.com/api`
+- Render: `FRONTEND_URL=https://TU-FRONTEND.vercel.app`
 
-## Docker
+El backend acepta el dominio configurado en `FRONTEND_URL` para CORS. Si necesitas mas de un origen, usa valores separados por coma.
 
-Requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y en ejecución.
+Deploy sugerido:
 
-Copia variables de entorno (opcional):
+1. En Render, crear un Web Service desde este repo usando `render.yaml`, o configurar `backend` como root, `npm install` como build y `npm start` como start.
+2. Copiar la URL de Render y crear `VITE_API_URL` en Vercel con `/api` al final.
+3. Publicar el frontend en Vercel usando `vercel.json`.
+4. Copiar la URL final de Vercel en Render como `FRONTEND_URL` y redeployar el backend.
 
-```bash
-copy .env.example .env
-```
+## 2. Screenshots
 
-### Desarrollo (hot reload)
+Guarda las capturas finales en `docs/screenshots/` antes de entregar.
 
-```bash
-npm run docker:dev
-```
+| Evidencia | Archivo sugerido |
+|---|---|
+| Home en Vercel con items reales | `docs/screenshots/01-home-vercel.png` |
+| Modo API activo contra Render | `docs/screenshots/02-modo-api-render.png` |
+| Graficas con datos | `docs/screenshots/03-graficas.png` |
+| Profiler / render optimizado | `docs/screenshots/04-profiler.png` |
 
-- Frontend: http://localhost:5173  
-- Backend: http://localhost:3000  
-- En la app, elige modo **API** para usar el backend del contenedor.
+![Home en Vercel](docs/screenshots/01-home-vercel.png)
+![Graficas](docs/screenshots/03-graficas.png)
 
-### Producción (build + nginx)
+## 3. Stack
 
-```bash
-npm run docker:up
-```
+- Frontend: React 19, Vite 6, Recharts, Context API, hooks custom, React Profiler.
+- Backend: Node.js, Express, SQLite con `better-sqlite3`, CORS y rutas REST.
+- Deploy: Vercel para frontend, Render para backend.
+- Infra local: Docker Compose para desarrollo y produccion local.
 
-Mismos puertos. La base SQLite se guarda en el volumen `sqlite-data`.
-
-### Detener
+## 4. Setup Local
 
 ```bash
-npm run docker:down
-# o desarrollo:
-npm run docker:dev:down
-```
-
-> **Importante:** `VITE_API_URL` debe ser `http://localhost:3000/api` porque el navegador corre en tu PC, no dentro de Docker. No uses `http://backend:3000` en el `.env`.
-
----
-
-## Fase 1 (rama `main`)
-
-Frontend con CRUD en LocalStorage y backend Express con SQLite.
-
-## Estructura
-
-```
-stw-fase1-items/
-├── frontend/     # Vite + React
-└── backend/      # Express + SQLite
-```
-
-## Requisitos
-
-- Node.js 18+
-
-## Frontend
-
-```bash
-cd frontend
 npm install
-npm run dev
+npm run install:all
+npm run dev:all
 ```
 
-Abre http://localhost:5173
+Servicios locales:
 
-## Backend
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3000
+- Health check: http://localhost:3000/api/health
 
-```bash
-cd backend
-npm install
-npm run dev
+Archivo `.env` local:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+FRONTEND_URL=http://localhost:5173
 ```
 
-API en http://localhost:3000
+## 5. Items Reales
 
-### Endpoints
+Tema de la app: seguimiento de metas personales. Para la defensa se recomiendan items reales y no datos genericos como "Test" o "Item 1".
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/api/items` | Items activos |
-| POST | `/api/items` | Crear item |
-| PUT | `/api/items/:id` | Actualizar |
-| DELETE | `/api/items/:id` | Archivar (activo=0) |
-| POST | `/api/items/:id/registro` | Registro de actividad |
+| Meta | Categoria | Estado | Puntuacion |
+|---|---|---|---|
+| Terminar Zelda: Tears of the Kingdom | RPG | En progreso | 8.5 |
+| Caminar 8,000 pasos diarios | Salud | En progreso | 9 |
+| Repasar capitulo 5 de Calculo | Estudio | Pendiente | 7 |
 
-Ejemplo crear item:
+## 6. Paleta
 
-```bash
-curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{\"nombre\":\"Leer 20 paginas\",\"categoriaId\":\"lectura\",\"estado\":\"pendiente\"}"
-```
+La paleta usa variables CSS para tema claro y oscuro:
 
-## Mis primeros Items
+| Uso | Claro | Oscuro |
+|---|---|---|
+| Fondo | `#eef2f7` | `#101624` |
+| Superficie | `#ffffff` | `#171f2e` |
+| Primario | `#2563eb` | `#60a5fa` |
+| Exito | `#16a34a` | `#4ade80` |
+| Peligro | `#dc2626` | `#fb7185` |
 
-Tema: **metas personales** (juegos, salud, estudio).
+Las categorias agregan acentos propios desde `frontend/src/utils/categorias.js`.
 
-> **Importante:** Agrega aquí una captura de pantalla con al menos 3 items **reales tuyos** (no "Test" ni "Item 1").  
-> Ejemplos de datos personales que puedes registrar:
->
-> - Terminar *Zelda: Tears of the Kingdom* (categoría rpg)
-> - Caminar 8,000 pasos diarios (categoría salud)
-> - Repasar capítulo 5 de Cálculo (categoría estudio)
+## 7. Graficas
 
-![Captura de mis items](./docs/captura-items.png)
+`DashboardGraficas` muestra tres vistas con Recharts:
 
-*(Crea la carpeta `docs/` y guarda tu captura antes de entregar.)*
+- Actividad de los ultimos 7 dias con barras.
+- Distribucion por categoria con dona.
+- Indice de enfoque con radar.
 
-## Git
+El indice de enfoque es una metrica propia: combina avance, puntuacion promedio y volumen de metas por categoria.
 
-- Mínimo 8 commits en 4+ días distintos
-- `.gitignore` incluye `node_modules`, `.env`, `*.sqlite`
+## 8. Profiler
 
-## Autor
+La app usa `React.Profiler` en formulario, filtros, graficas, lista y modal. En desarrollo imprime mediciones con la etiqueta `[Fase 3 Profiler]`.
 
-Karen — UVG STW 2026
+Optimizaciones aplicadas:
+
+- `useReducer` centraliza el estado de metas.
+- `useMemo` evita recalcular filtros, estadisticas y datasets innecesarios.
+- `useCallback` estabiliza handlers enviados a componentes hijos.
+- `React.memo` reduce renders en tarjetas, lista, filtros, formulario y graficas.
+
+Evidencia escrita: `docs/fase3-profiler.md`.
+
+## 9. Tabla De Hooks
+
+| Hook | Archivo | Responsabilidad | Donde se usa |
+|---|---|---|---|
+| `useLocalStorage` | `frontend/src/hooks/useLocalStorage.js` | Leer, escribir y sincronizar estado persistido | `ThemeContext`, `StorageContext` |
+| `useFetch` | `frontend/src/hooks/useFetch.js` | Fetch reutilizable con `AbortController`, loading, error y data | `StorageContext` |
+| `useAtajoTeclado` | `frontend/src/hooks/useAtajoTeclado.js` | Registrar atajos de teclado ignorando campos editables cuando aplica | `ThemeContext`, `ModalEdicion` |
+| `useProgreso` | `frontend/src/hooks/useProgreso.js` | Calcular estadisticas y datasets de graficas del dominio de metas | `App` |
+
+## 10. Sobre Mi
+
+Karen, estudiante de Sistemas y Tecnologias Web en UVG. En este proyecto cerre el flujo completo: estado local, API, persistencia, optimizacion con Profiler, hooks reutilizables y preparacion para deploy en produccion.
+
+Mi decision tecnica principal fue aislar la persistencia en adaptadores y hooks. Asi los componentes no dependen de si los datos vienen de LocalStorage o de Express, y el cambio de modo se mantiene en una sola frontera clara.

@@ -1,38 +1,44 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useFetch } from '../hooks/useFetch.js';
+import { useLocalStorage } from '../hooks/useLocalStorage.js';
+import { ITEMS_ENDPOINT } from '../services/apiItems.js';
 import { ADAPTADORES, MODO_STORAGE_KEY } from '../services/storageAdapters.js';
 
 const StorageContext = createContext(null);
 
 export function StorageProvider({ children }) {
-  const [modo, setModoState] = useState(
-    () => localStorage.getItem(MODO_STORAGE_KEY) || 'local'
-  );
+  const [modo, setModo] = useLocalStorage(MODO_STORAGE_KEY, 'local');
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const { ejecutar: fetchItems, abortar: abortarFetchItems } = useFetch(ITEMS_ENDPOINT, {
+    initialData: [],
+    immediate: false,
+  });
 
-  const adaptador = ADAPTADORES[modo] ?? ADAPTADORES.local;
-
-  const setModo = useCallback((nuevoModo) => {
-    setModoState(nuevoModo);
-    localStorage.setItem(MODO_STORAGE_KEY, nuevoModo);
-  }, []);
+  const modoActivo = ADAPTADORES[modo] ? modo : 'local';
+  const adaptador = ADAPTADORES[modoActivo] ?? ADAPTADORES.local;
 
   const obtenerItems = useCallback(async () => {
     setCargando(true);
     setError(null);
     try {
-      const data = await adaptador.obtenerItems();
-      setItems(data);
-      return data;
+      const data =
+        modoActivo === 'api' ? await fetchItems(ITEMS_ENDPOINT) : await adaptador.obtenerItems();
+      const lista = Array.isArray(data) ? data : [];
+      setItems(lista);
+      return lista;
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return [];
+      }
       setError(err.message || 'Error al cargar items');
       setItems([]);
       return [];
     } finally {
       setCargando(false);
     }
-  }, [adaptador]);
+  }, [adaptador, fetchItems, modoActivo]);
 
   const guardarItem = useCallback(
     async (item) => {
@@ -81,11 +87,16 @@ export function StorageProvider({ children }) {
 
   useEffect(() => {
     obtenerItems();
-  }, [obtenerItems]);
+    return () => {
+      if (modoActivo === 'api') {
+        abortarFetchItems();
+      }
+    };
+  }, [abortarFetchItems, modoActivo, obtenerItems]);
 
   const value = useMemo(
     () => ({
-      modo,
+      modo: modoActivo,
       setModo,
       items,
       cargando,
@@ -96,7 +107,7 @@ export function StorageProvider({ children }) {
       registrarActividad,
     }),
     [
-      modo,
+      modoActivo,
       setModo,
       items,
       cargando,

@@ -1,31 +1,22 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import { useAtajoTeclado } from '../hooks/useAtajoTeclado.js';
+import { useLocalStorage } from '../hooks/useLocalStorage.js';
 
 const ThemeContext = createContext(null);
 const THEME_KEY = 'app-theme';
 
 export function ThemeProvider({ children }) {
-  const [tema, setTema] = useState(() => localStorage.getItem(THEME_KEY) || 'light');
+  const [tema, setTema] = useLocalStorage(THEME_KEY, 'light');
 
   const alternarTema = useCallback(() => {
     setTema((prev) => (prev === 'light' ? 'dark' : 'light'));
-  }, []);
+  }, [setTema]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', tema);
-    localStorage.setItem(THEME_KEY, tema);
   }, [tema]);
 
-  useEffect(() => {
-    function onTecla(e) {
-      if (e.key !== 't' && e.key !== 'T') return;
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-      e.preventDefault();
-      alternarTema();
-    }
-
-    window.addEventListener('keydown', onTecla);
-    return () => window.removeEventListener('keydown', onTecla);
-  }, [alternarTema]);
+  useAtajoTeclado('t', alternarTema);
 
   const value = useMemo(
     () => ({ tema, alternarTema, esOscuro: tema === 'dark' }),

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useAtajoTeclado } from '../hooks/useAtajoTeclado.js';
 import FormularioItem from './FormularioItem.jsx';
 
 export default function ModalEdicion({ itemEditando, onGuardar, onCancelar, focusTrigger }) {
@@ -8,16 +9,7 @@ export default function ModalEdicion({ itemEditando, onGuardar, onCancelar, focu
     }
   }
 
-  useEffect(() => {
-    function cerrarConEscape(e) {
-      if (e.key === 'Escape') {
-        onCancelar();
-      }
-    }
-
-    document.addEventListener('keydown', cerrarConEscape);
-    return () => document.removeEventListener('keydown', cerrarConEscape);
-  }, [onCancelar]);
+  useAtajoTeclado('Escape', onCancelar, { ignorarCampos: false });
 
   useEffect(() => {
     const overflowOriginal = document.body.style.overflow;

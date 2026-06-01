@@ -1,18 +1,19 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+export const ITEMS_ENDPOINT = `${API_BASE}/items`;
 
 async function parseError(res) {
   const data = await res.json().catch(() => ({}));
   throw new Error(data.error || `Error HTTP ${res.status}`);
 }
 
-export async function obtenerItemsApi() {
-  const res = await fetch(`${API_BASE}/items`);
+export async function obtenerItemsApi(init = {}) {
+  const res = await fetch(ITEMS_ENDPOINT, init);
   if (!res.ok) await parseError(res);
   return res.json();
 }
 
 export async function crearItemApi(item) {
-  const res = await fetch(`${API_BASE}/items`, {
+  const res = await fetch(ITEMS_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(item),
