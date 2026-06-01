@@ -12,17 +12,17 @@ Aplicacion full stack para registrar metas personales, medir avance, alternar en
 | Health check | Pendiente: `https://TU-BACKEND.onrender.com/api/health` |
 | Video demo | Pendiente: agregar enlace del video final |
 
-Variables de produccion:
+Variables de produccion opcionales:
 
 - Vercel: `VITE_API_URL=https://TU-BACKEND.onrender.com/api`
 - Render: `FRONTEND_URL=https://TU-FRONTEND.vercel.app`
 
-El backend acepta el dominio configurado en `FRONTEND_URL` para CORS. Si necesitas mas de un origen, usa valores separados por coma.
+La app tambien permite pegar la URL de Render desde la barra superior cuando eliges modo API, asi que `VITE_API_URL` ya no es obligatorio para probar el frontend publicado. El backend acepta automaticamente dominios `*.vercel.app`; `FRONTEND_URL` queda para dominios propios o listas estrictas.
 
 Deploy sugerido:
 
 1. En Render, crear un Web Service desde este repo usando `render.yaml`, o configurar `backend` como root, `npm install` como build y `npm start` como start.
-2. Copiar la URL de Render y crear `VITE_API_URL` en Vercel con `/api` al final.
+2. Copiar la URL de Render y pegarla en la barra superior de la app como `https://TU-BACKEND.onrender.com/api`, o crear `VITE_API_URL` en Vercel con `/api` al final.
 3. Publicar el frontend en Vercel usando `vercel.json`.
 4. Copiar la URL final de Vercel en Render como `FRONTEND_URL` y redeployar el backend.
 

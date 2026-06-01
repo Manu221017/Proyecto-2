@@ -69,27 +69,27 @@ export const adaptadorLocal = {
 };
 
 export const adaptadorApi = {
-  async obtenerItems() {
-    return obtenerItemsApi();
+  async obtenerItems(apiBase) {
+    return obtenerItemsApi(apiBase);
   },
 
-  async guardarItem(item, idsExistentes) {
+  async guardarItem(item, idsExistentes, apiBase) {
     const payload = {
       ...item,
       fechaActividad: new Date().toISOString(),
     };
     if (idsExistentes.has(item.id)) {
-      return actualizarItemApi(payload);
+      return actualizarItemApi(payload, apiBase);
     }
-    return crearItemApi(payload);
+    return crearItemApi(payload, apiBase);
   },
 
-  async eliminarItem(id) {
-    return archivarItemApi(id);
+  async eliminarItem(id, apiBase) {
+    return archivarItemApi(id, apiBase);
   },
 
-  async registrarActividad(id, registro) {
-    return registrarActividadApi(id, registro);
+  async registrarActividad(id, registro, apiBase) {
+    return registrarActividadApi(id, registro, apiBase);
   },
 };
 
