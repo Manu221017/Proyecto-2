@@ -11,10 +11,22 @@ const ORIGENES_PERMITIDOS = (process.env.FRONTEND_URL || 'http://localhost:5173'
   .map((origin) => normalizarOrigin(origin.trim()))
   .filter(Boolean);
 
+function esOrigenPermitido(origin) {
+  if (!origin) return true;
+  const originNormalizado = normalizarOrigin(origin);
+  if (ORIGENES_PERMITIDOS.includes(originNormalizado)) return true;
+
+  try {
+    return new URL(originNormalizado).hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+}
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || ORIGENES_PERMITIDOS.includes(normalizarOrigin(origin))) {
+      if (esOrigenPermitido(origin)) {
         callback(null, true);
         return;
       }
